@@ -1,14 +1,85 @@
 <!DOCTYPE html>
 <html lang="nl">
-<head><meta charset="UTF-8"><title>Tests</title></head>
-<body><pre id="output"></pre>
+<head>
+  <meta charset="UTF-8">
+  <title>Tests — Rekenapp</title>
+  <style>body{font-family:monospace;padding:2rem;} .pass{color:green;} .fail{color:red;}</style>
+</head>
+<body>
+<h2>Rekenapp Tests</h2>
+<pre id="output"></pre>
 <script type="module">
+import { generateExercise, generateSession } from './exercises.js';
+
 const out = document.getElementById('output');
+let passed = 0, failed = 0;
+
 function test(name, fn) {
-  try { fn(); out.textContent += `✅ ${name}\n`; }
-  catch(e) { out.textContent += `❌ ${name}: ${e.message}\n`; }
+  try {
+    fn();
+    out.innerHTML += `<span class="pass">✅ ${name}</span>\n`;
+    passed++;
+  } catch(e) {
+    out.innerHTML += `<span class="fail">❌ ${name}: ${e.message}</span>\n`;
+    failed++;
+  }
 }
-function assert(cond, msg) { if (!cond) throw new Error(msg || 'assertion failed'); }
+function assert(cond, msg) { if (!cond) throw new Error(msg || 'mislukt'); }
+
+const s = { ops: ['+', '-', '×', '÷'], min: 1, max: 10, aantal: 10 };
+
+test('optelling: antwoord klopt', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateExercise({ ...s, ops: ['+'] });
+    assert(ex.answer === ex.a + ex.b, `${ex.a}+${ex.b}≠${ex.answer}`);
+  }
+});
+
+test('aftrekking: resultaat >= 0 en antwoord klopt', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateExercise({ ...s, ops: ['-'] });
+    assert(ex.answer >= 0, `${ex.a}-${ex.b}=${ex.answer} < 0`);
+    assert(ex.answer === ex.a - ex.b, `${ex.a}-${ex.b}≠${ex.answer}`);
+  }
+});
+
+test('vermenigvuldigen: antwoord klopt', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateExercise({ ...s, ops: ['×'] });
+    assert(ex.answer === ex.a * ex.b, `${ex.a}×${ex.b}≠${ex.answer}`);
+  }
+});
+
+test('delen: geheel getal, niet door nul, antwoord klopt', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateExercise({ ...s, ops: ['÷'] });
+    assert(ex.b !== 0, 'deling door nul');
+    assert(Number.isInteger(ex.answer), `${ex.a}÷${ex.b}=${ex.answer} is geen geheel getal`);
+    assert(ex.answer === ex.a / ex.b, `${ex.a}÷${ex.b}≠${ex.answer}`);
+  }
+});
+
+test('optelling: getallen binnen bereik', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateExercise({ ...s, ops: ['+'] });
+    assert(ex.a >= 1 && ex.a <= 10, `a=${ex.a} buiten bereik`);
+    assert(ex.b >= 1 && ex.b <= 10, `b=${ex.b} buiten bereik`);
+  }
+});
+
+test('sessie heeft juist aantal oefeningen', () => {
+  const session = generateSession(s);
+  assert(session.length === 10, `verwacht 10, kreeg ${session.length}`);
+});
+
+test('sessie heeft unieke oefeningen', () => {
+  const session = generateSession(s);
+  const keys = session.map(e => `${e.a}${e.op}${e.b}`);
+  const unique = new Set(keys);
+  assert(unique.size === keys.length, `duplicaten gevonden`);
+});
+
+out.innerHTML += `\n<strong>${passed} geslaagd, ${failed} mislukt</strong>\n`;
 </script>
 </body>
 </html>
