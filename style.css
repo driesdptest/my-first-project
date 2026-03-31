@@ -1,1 +1,137 @@
-/* Rekenapp stijlen */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #f0f7ff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.screen { display: none; width: 100%; max-width: 600px; }
+.screen.active { display: block; }
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #1a73e8;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+button {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  padding: 0.9rem 2rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+}
+button:active { transform: scale(0.96); }
+button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-primary { background: #1a73e8; color: white; width: 100%; margin-top: 1.5rem; }
+.btn-secondary { background: #e8f0fe; color: #1a73e8; }
+
+input[type="number"] {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  border: 3px solid #d0e4ff;
+  border-radius: 0.75rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input[type="number"]:focus { border-color: #1a73e8; }
+
+.checkbox-group { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; }
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #e8f0fe;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  user-select: none;
+}
+.checkbox-label input { width: 1.2rem; height: 1.2rem; cursor: pointer; }
+
+.number-row { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.25rem; }
+.number-row label { font-size: 1rem; font-weight: 700; color: #555; white-space: nowrap; }
+.number-row input { width: 90px; flex-shrink: 0; }
+
+.error-msg { color: #d93025; font-size: 0.95rem; font-weight: 700; margin-top: 0.4rem; min-height: 1.2rem; }
+
+/* Progress bar */
+.progress-wrap { margin-bottom: 1.5rem; }
+.progress-label { font-size: 1rem; font-weight: 700; color: #555; margin-bottom: 0.4rem; text-align: center; }
+.progress-bar { background: #d0e4ff; border-radius: 999px; height: 12px; }
+.progress-fill { background: #1a73e8; border-radius: 999px; height: 12px; transition: width 0.4s ease; }
+
+/* Problem display */
+.problem { font-size: 3.5rem; font-weight: 900; color: #1a73e8; text-align: center; margin: 1.5rem 0; letter-spacing: 0.05em; }
+
+/* Answer input */
+.answer-wrap { display: flex; justify-content: center; margin-bottom: 1rem; }
+.answer-input {
+  font-size: 2.5rem !important;
+  font-weight: 900 !important;
+  text-align: center;
+  width: 160px !important;
+  padding: 0.5rem !important;
+  border-width: 4px !important;
+}
+
+/* Feedback */
+.feedback { font-size: 1.3rem; font-weight: 700; text-align: center; min-height: 2rem; margin-bottom: 0.75rem; }
+.feedback.correct { color: #0d8f4e; }
+.feedback.wrong { color: #d93025; }
+.feedback.reveal { color: #555; }
+
+/* Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-7px); }
+  80% { transform: translateX(7px); }
+}
+.shake { animation: shake 0.4s ease; }
+
+/* Results */
+.score-display { font-size: 1.8rem; font-weight: 900; text-align: center; color: #333; margin-bottom: 1rem; }
+.stars { font-size: 3rem; text-align: center; margin-bottom: 0.5rem; }
+.result-msg { font-size: 1.2rem; font-weight: 700; text-align: center; color: #555; margin-bottom: 1.5rem; }
+.btn-row { display: flex; gap: 1rem; justify-content: center; }
+.btn-row button { width: auto; margin-top: 0; }
+
+/* Confetti canvas */
+#confetti-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
