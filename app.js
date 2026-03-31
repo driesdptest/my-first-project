@@ -67,5 +67,100 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
-// --- Placeholders: filled in later tasks ---
-function showExercise() {}
+// --- Exercise screen elements ---
+const problemDisplay = document.getElementById('problem-display');
+const answerInput = document.getElementById('answer-input');
+const feedbackMsg = document.getElementById('feedback-msg');
+const progressLabel = document.getElementById('progress-label');
+const progressFill = document.getElementById('progress-fill');
+const btnControleren = document.getElementById('btn-controleren');
+
+const CELEBRATION_MSGS = [
+  'Goed zo! 🎉', 'Super! ⭐', 'Wauw, geweldig! 🌟',
+  'Fantastisch! 🏆', 'Jij bent een rekenster! 🌈', 'Bravo! 👏'
+];
+
+let attempts = 0;
+
+function showExercise() {
+  const ex = session[sessionIndex];
+  problemDisplay.textContent = `${ex.a} ${ex.op} ${ex.b} = ?`;
+  answerInput.value = '';
+  feedbackMsg.textContent = '';
+  feedbackMsg.className = 'feedback';
+  attempts = 0;
+  updateProgress();
+  setTimeout(() => answerInput.focus(), 100);
+}
+
+function updateProgress() {
+  const current = sessionIndex + 1;
+  const total = session.length;
+  progressLabel.textContent = `Vraag ${current} van ${total}`;
+  progressFill.style.width = `${((current - 1) / total) * 100}%`;
+}
+
+function nextExercise() {
+  sessionIndex++;
+  if (sessionIndex >= session.length) {
+    showResults();
+  } else {
+    showExercise();
+  }
+}
+
+btnControleren.addEventListener('click', checkAnswer);
+answerInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+
+function checkAnswer() {
+  const userAnswer = parseInt(answerInput.value, 10);
+  if (isNaN(userAnswer)) { answerInput.focus(); return; }
+
+  const correct = session[sessionIndex].answer;
+
+  if (userAnswer === correct) {
+    results.push(true);
+    feedbackMsg.textContent = CELEBRATION_MSGS[Math.floor(Math.random() * CELEBRATION_MSGS.length)];
+    feedbackMsg.className = 'feedback correct';
+    launchConfetti();
+    btnControleren.disabled = true;
+    answerInput.disabled = true;
+    setTimeout(() => {
+      btnControleren.disabled = false;
+      answerInput.disabled = false;
+      nextExercise();
+    }, 1500);
+  } else {
+    attempts++;
+    if (attempts < 3) {
+      const msgs = ['Probeer nog eens! 💪', 'Bijna! Probeer nog één keer! 🤔'];
+      feedbackMsg.textContent = msgs[Math.min(attempts - 1, msgs.length - 1)];
+      feedbackMsg.className = 'feedback wrong';
+      triggerShake(answerInput);
+      answerInput.value = '';
+      answerInput.focus();
+    } else {
+      results.push(false);
+      feedbackMsg.textContent = `Het antwoord is ${correct}`;
+      feedbackMsg.className = 'feedback reveal';
+      btnControleren.disabled = true;
+      answerInput.disabled = true;
+      setTimeout(() => {
+        btnControleren.disabled = false;
+        answerInput.disabled = false;
+        nextExercise();
+      }, 2000);
+    }
+  }
+}
+
+function triggerShake(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth; // force reflow to restart animation
+  el.classList.add('shake');
+  el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
+}
+
+// Placeholders replaced in Tasks 7 and 8
+function launchConfetti() {}
+function showResults() {}

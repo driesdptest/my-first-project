@@ -50,7 +50,19 @@
 
   <!-- Screen 2: Oefening -->
   <div id="screen-oefening" class="screen">
-    <h1>Oefening</h1>
+    <h1>Rekenapp 🧮</h1>
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-label" id="progress-label">Vraag 1 van 10</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+      <div class="problem" id="problem-display">7 + 4 = ?</div>
+      <div class="answer-wrap">
+        <input type="number" id="answer-input" class="answer-input" placeholder="?" autocomplete="off">
+      </div>
+      <div class="feedback" id="feedback-msg"></div>
+      <button class="btn-primary" id="btn-controleren">Controleren ✅</button>
+    </div>
   </div>
 
   <!-- Screen 3: Resultaten -->
