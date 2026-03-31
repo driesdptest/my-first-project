@@ -214,4 +214,42 @@ function animateConfetti() {
   }
 }
 
-function showResults() {}
+const starsDisplay = document.getElementById('stars-display');
+const scoreDisplay = document.getElementById('score-display');
+const resultMsg = document.getElementById('result-msg');
+const btnOpnieuw = document.getElementById('btn-opnieuw');
+const btnInstellingen = document.getElementById('btn-instellingen');
+
+function showResults() {
+  const correct = results.filter(Boolean).length;
+  const total = results.length;
+  const pct = correct / total;
+
+  scoreDisplay.textContent = `Je hebt ${correct} van de ${total} sommen goed!`;
+
+  if (pct >= 0.8) {
+    starsDisplay.textContent = '⭐⭐⭐';
+    resultMsg.textContent = 'Geweldig! Je bent een rekenkampioen! 🏆';
+    launchConfetti(true);
+  } else if (pct >= 0.5) {
+    starsDisplay.textContent = '⭐⭐';
+    resultMsg.textContent = 'Goed gedaan! Blijf zo doorgaan!';
+  } else {
+    starsDisplay.textContent = '☆☆☆';
+    resultMsg.textContent = 'Blijf oefenen, je komt er!';
+  }
+
+  showScreen('screen-resultaten');
+}
+
+btnOpnieuw.addEventListener('click', () => {
+  session = generateSession(settings);
+  sessionIndex = 0;
+  results = [];
+  showScreen('screen-oefening');
+  showExercise();
+});
+
+btnInstellingen.addEventListener('click', () => {
+  showScreen('screen-instellingen');
+});
