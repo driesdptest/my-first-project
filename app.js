@@ -243,6 +243,7 @@ function showResults() {
 }
 
 btnOpnieuw.addEventListener('click', () => {
+  if (!settings) return;
   session = generateSession(settings);
   sessionIndex = 0;
   results = [];
