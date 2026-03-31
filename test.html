@@ -79,6 +79,11 @@ test('sessie heeft unieke oefeningen', () => {
   assert(unique.size === keys.length, `duplicaten gevonden`);
 });
 
+test('sessie met klein bereik vult correct aan', () => {
+  const session = generateSession({ ops: ['+'], min: 1, max: 3, aantal: 50 });
+  assert(session.length === 50, `verwacht 50, kreeg ${session.length}`);
+});
+
 out.innerHTML += `\n<strong>${passed} geslaagd, ${failed} mislukt</strong>\n`;
 </script>
 </body>

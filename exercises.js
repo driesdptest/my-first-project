@@ -27,7 +27,10 @@ export function generateExercise(settings) {
     b = randInt(min, max);
     if (b === 0) b = 1;
     a = answer * b;
-    if (a > max) { b = 1; a = answer; }
+    if (a > max) {
+      b = Math.max(1, Math.floor(max / answer));
+      a = answer * b;
+    }
   }
 
   return { a, op, b, answer };
