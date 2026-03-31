@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head><meta charset="UTF-8"><title>Tests</title></head>
+<body><pre id="output"></pre>
+<script type="module">
+const out = document.getElementById('output');
+function test(name, fn) {
+  try { fn(); out.textContent += `✅ ${name}\n`; }
+  catch(e) { out.textContent += `❌ ${name}: ${e.message}\n`; }
+}
+function assert(cond, msg) { if (!cond) throw new Error(msg || 'assertion failed'); }
+</script>
+</body>
+</html>
