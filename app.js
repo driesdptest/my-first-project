@@ -162,5 +162,56 @@ function triggerShake(el) {
 }
 
 // Placeholders replaced in Tasks 7 and 8
-function launchConfetti() {}
+const confettiCanvas = document.getElementById('confetti-canvas');
+const ctx = confettiCanvas.getContext('2d');
+let confettiParticles = [];
+let confettiAnimating = false;
+const CONFETTI_COLORS = ['#1a73e8','#fbbc04','#34a853','#ea4335','#ff6d00','#ab47bc'];
+
+function launchConfetti(fullBurst = false) {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+  const count = fullBurst ? 180 : 80;
+  for (let i = 0; i < count; i++) {
+    confettiParticles.push({
+      x: Math.random() * confettiCanvas.width,
+      y: Math.random() * confettiCanvas.height * 0.4,
+      w: 8 + Math.random() * 8,
+      h: 5 + Math.random() * 5,
+      color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 4,
+      angle: Math.random() * 360,
+      spin: (Math.random() - 0.5) * 6,
+      alpha: 1,
+    });
+  }
+  if (!confettiAnimating) animateConfetti();
+}
+
+function animateConfetti() {
+  confettiAnimating = true;
+  ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  confettiParticles = confettiParticles.filter(p => p.alpha > 0.05);
+  confettiParticles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.angle += p.spin;
+    p.alpha -= 0.012;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.alpha);
+    ctx.translate(p.x, p.y);
+    ctx.rotate((p.angle * Math.PI) / 180);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    ctx.restore();
+  });
+  if (confettiParticles.length > 0) {
+    requestAnimationFrame(animateConfetti);
+  } else {
+    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    confettiAnimating = false;
+  }
+}
+
 function showResults() {}
