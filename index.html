@@ -13,31 +13,48 @@
   <div id="screen-instellingen" class="screen active">
     <h1>Rekenapp 🧮</h1>
     <div class="card">
-      <h2>Bewerkingen</h2>
-      <div class="checkbox-group">
-        <label class="checkbox-label">
-          <input type="checkbox" id="op-plus" value="+"> <span>Optellen (+)</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" id="op-min" value="-"> <span>Aftrekken (−)</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" id="op-keer" value="×"> <span>Vermenigvuldigen (×)</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" id="op-delen" value="÷"> <span>Delen (÷)</span>
-        </label>
+      <!-- Mode toggle -->
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="btn-mode-random">Willekeurig 🎲</button>
+        <button class="mode-btn" id="btn-mode-eigen">Eigen sommen ✏️</button>
       </div>
 
-      <h2>Getallen</h2>
-      <div class="number-row">
-        <label for="min-getal">Van:</label>
-        <input type="number" id="min-getal" value="1" min="1">
-        <label for="max-getal">Tot:</label>
-        <input type="number" id="max-getal" value="10" min="2">
-      </div>
-      <div class="error-msg" id="getal-error"></div>
+      <!-- Random mode section -->
+      <div id="random-section">
+        <h2>Bewerkingen</h2>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="op-plus" value="+"> <span>Optellen (+)</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="op-min" value="-"> <span>Aftrekken (−)</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="op-keer" value="×"> <span>Vermenigvuldigen (×)</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="op-delen" value="÷"> <span>Delen (÷)</span>
+          </label>
+        </div>
 
+        <h2>Getallen</h2>
+        <div class="number-row">
+          <label for="min-getal">Van:</label>
+          <input type="number" id="min-getal" value="1" min="1">
+          <label for="max-getal">Tot:</label>
+          <input type="number" id="max-getal" value="10" min="2">
+        </div>
+        <div class="error-msg" id="getal-error"></div>
+      </div>
+
+      <!-- Eigen sommen section (hidden by default) -->
+      <div id="eigen-section" style="display:none">
+        <h2>Jouw sommen</h2>
+        <div id="pattern-list"></div>
+        <button class="btn-add-pattern" id="btn-add-pattern">＋ Som toevoegen</button>
+      </div>
+
+      <!-- Shared: number of exercises -->
       <h2>Aantal oefeningen</h2>
       <div class="number-row">
         <input type="number" id="aantal" value="10" min="1" max="50">
