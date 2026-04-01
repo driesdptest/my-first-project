@@ -9,7 +9,7 @@
 <h2>Rekenapp Tests</h2>
 <pre id="output"></pre>
 <script type="module">
-import { generateExercise, generateSession } from './exercises.js';
+import { generateExercise, generateSession, generateFromPattern } from './exercises.js';
 
 const out = document.getElementById('output');
 let passed = 0, failed = 0;
@@ -82,6 +82,62 @@ test('sessie heeft unieke oefeningen', () => {
 test('sessie met klein bereik vult correct aan', () => {
   const session = generateSession({ ops: ['+'], min: 1, max: 3, aantal: 50 });
   assert(session.length === 50, `verwacht 50, kreeg ${session.length}`);
+});
+
+const pat = { fixed: 9, op: '-', min: 1, max: 8 };
+
+test('generateFromPattern: optelling antwoord klopt', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateFromPattern({ fixed: 6, op: '+', min: 1, max: 5 });
+    assert(ex.a === 6, `a moet 6 zijn, got ${ex.a}`);
+    assert(ex.answer === ex.a + ex.b, `${ex.a}+${ex.b}≠${ex.answer}`);
+    assert(ex.b >= 1 && ex.b <= 5, `b=${ex.b} buiten bereik`);
+  }
+});
+
+test('generateFromPattern: aftrekking niet negatief', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateFromPattern(pat);
+    assert(ex.a === 9, `a moet 9 zijn`);
+    assert(ex.answer >= 0, `antwoord ${ex.answer} is negatief`);
+    assert(ex.answer === ex.a - ex.b, `${ex.a}-${ex.b}≠${ex.answer}`);
+  }
+});
+
+test('generateFromPattern: vermenigvuldigen klopt', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateFromPattern({ fixed: 4, op: '×', min: 1, max: 10 });
+    assert(ex.a === 4, `a moet 4 zijn`);
+    assert(ex.answer === ex.a * ex.b, `${ex.a}×${ex.b}≠${ex.answer}`);
+  }
+});
+
+test('generateFromPattern: deling geeft geheel getal', () => {
+  for (let i = 0; i < 50; i++) {
+    const ex = generateFromPattern({ fixed: 12, op: '÷', min: 1, max: 6 });
+    assert(ex.a === 12, `a moet 12 zijn`);
+    assert(ex.b !== 0, 'deling door nul');
+    assert(Number.isInteger(ex.answer), `${ex.a}÷${ex.b}=${ex.answer} is geen geheel getal`);
+    assert(ex.a / ex.b === ex.answer, `${ex.a}÷${ex.b}≠${ex.answer}`);
+  }
+});
+
+test('generateSession met patterns: juist aantal', () => {
+  const patterns = [
+    { fixed: 9, op: '-', min: 1, max: 8 },
+    { fixed: 5, op: '+', min: 1, max: 5 },
+  ];
+  const session = generateSession({ patterns, aantal: 10 });
+  assert(session.length === 10, `verwacht 10, kreeg ${session.length}`);
+});
+
+test('generateSession met patterns: alleen opgegeven bewerkingen', () => {
+  const patterns = [{ fixed: 9, op: '-', min: 1, max: 8 }];
+  const session = generateSession({ patterns, aantal: 10 });
+  session.forEach(ex => {
+    assert(ex.a === 9, `a moet 9 zijn, got ${ex.a}`);
+    assert(ex.op === '-', `bewerking moet - zijn, got ${ex.op}`);
+  });
 });
 
 out.innerHTML += `\n<strong>${passed} geslaagd, ${failed} mislukt</strong>\n`;
