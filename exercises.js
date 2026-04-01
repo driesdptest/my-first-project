@@ -49,7 +49,7 @@ export function generateFromPattern(pattern) {
     b = randInt(min, max);
     answer = fixed + b;
   } else if (op === '-') {
-    b = randInt(min, max);
+    b = Math.min(randInt(min, max), fixed);
     answer = fixed - b;
   } else if (op === '×') {
     b = randInt(min, max);

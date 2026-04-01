@@ -140,6 +140,16 @@ test('generateSession met patterns: alleen opgegeven bewerkingen', () => {
   });
 });
 
+test('generateFromPattern: deling met priemgetal valt terug op b=1', () => {
+  // 7 is prime; only divisors are 1 and 7; range [2,6] has no divisors of 7
+  for (let i = 0; i < 20; i++) {
+    const ex = generateFromPattern({ fixed: 7, op: '÷', min: 2, max: 6 });
+    assert(ex.a === 7, `a moet 7 zijn`);
+    assert(ex.b === 1, `b moet 1 zijn (fallback), got ${ex.b}`);
+    assert(ex.answer === 7, `antwoord moet 7 zijn, got ${ex.answer}`);
+  }
+});
+
 out.innerHTML += `\n<strong>${passed} geslaagd, ${failed} mislukt</strong>\n`;
 </script>
 </body>
