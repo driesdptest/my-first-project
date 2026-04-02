@@ -49,6 +49,7 @@ function validate() {
 
     btnStarten.disabled = !(valid && ops.length > 0);
   } else {
+    getalError.textContent = '';
     const aantal = parseInt(aantalInput.value, 10);
     if (isNaN(aantal) || aantal < 1 || aantal > 50) {
       aantalError.textContent = 'Kies een aantal tussen 1 en 50.';
@@ -112,8 +113,6 @@ btnModeEigen.addEventListener('click', () => {
 });
 
 // --- Pattern management ---
-let patternIdCounter = 0;
-
 function getValidPatterns() {
   return [...patternList.querySelectorAll('.pattern-row')].map(row => {
     const fixed = parseInt(row.querySelector('.pat-fixed').value, 10);
@@ -129,10 +128,8 @@ function getValidPatterns() {
 }
 
 function addPatternRow() {
-  const id = ++patternIdCounter;
   const row = document.createElement('div');
   row.className = 'pattern-row';
-  row.dataset.id = id;
   row.innerHTML = `
     <input type="number" class="pat-fixed" placeholder="Getal" min="1">
     <select class="pat-op">
