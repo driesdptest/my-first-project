@@ -5,6 +5,7 @@ let session = null;     // array of { a, op, b, answer }
 let sessionIndex = 0;
 let results = [];       // array of booleans (true = correct)
 let settings = null;
+let mode = 'random'; // 'random' | 'eigen'
 
 // --- Settings screen elements ---
 const btnStarten = document.getElementById('btn-starten');
@@ -15,29 +16,48 @@ const maxInput = document.getElementById('max-getal');
 const aantalInput = document.getElementById('aantal');
 const opCheckboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
 
+// --- Mode toggle elements ---
+const btnModeRandom = document.getElementById('btn-mode-random');
+const btnModeEigen = document.getElementById('btn-mode-eigen');
+const randomSection = document.getElementById('random-section');
+const eigenSection = document.getElementById('eigen-section');
+const patternList = document.getElementById('pattern-list');
+const btnAddPattern = document.getElementById('btn-add-pattern');
+
 // --- Validation ---
 function validate() {
-  const ops = [...opCheckboxes].filter(c => c.checked).map(c => c.value);
-  const min = parseInt(minInput.value, 10);
-  const max = parseInt(maxInput.value, 10);
-  const aantal = parseInt(aantalInput.value, 10);
-  let valid = true;
+  if (mode === 'random') {
+    const ops = [...opCheckboxes].filter(c => c.checked).map(c => c.value);
+    const min = parseInt(minInput.value, 10);
+    const max = parseInt(maxInput.value, 10);
+    const aantal = parseInt(aantalInput.value, 10);
+    let valid = true;
 
-  if (isNaN(min) || isNaN(max) || min < 1 || max <= min) {
-    getalError.textContent = 'Het maximale getal moet groter zijn dan het minimale getal (minimaal 1).';
-    valid = false;
+    if (isNaN(min) || isNaN(max) || min < 1 || max <= min) {
+      getalError.textContent = 'Het maximale getal moet groter zijn dan het minimale getal (minimaal 1).';
+      valid = false;
+    } else {
+      getalError.textContent = '';
+    }
+
+    if (isNaN(aantal) || aantal < 1 || aantal > 50) {
+      aantalError.textContent = 'Kies een aantal tussen 1 en 50.';
+      valid = false;
+    } else {
+      aantalError.textContent = '';
+    }
+
+    btnStarten.disabled = !(valid && ops.length > 0);
   } else {
-    getalError.textContent = '';
+    const aantal = parseInt(aantalInput.value, 10);
+    if (isNaN(aantal) || aantal < 1 || aantal > 50) {
+      aantalError.textContent = 'Kies een aantal tussen 1 en 50.';
+      btnStarten.disabled = true;
+    } else {
+      aantalError.textContent = '';
+      btnStarten.disabled = getValidPatterns().length === 0;
+    }
   }
-
-  if (isNaN(aantal) || aantal < 1 || aantal > 50) {
-    aantalError.textContent = 'Kies een aantal tussen 1 en 50.';
-    valid = false;
-  } else {
-    aantalError.textContent = '';
-  }
-
-  btnStarten.disabled = !(valid && ops.length > 0);
 }
 
 opCheckboxes.forEach(c => c.addEventListener('change', validate));
@@ -47,13 +67,18 @@ aantalInput.addEventListener('input', validate);
 
 // --- Start session ---
 btnStarten.addEventListener('click', () => {
-  const ops = [...opCheckboxes].filter(c => c.checked).map(c => c.value);
-  settings = {
-    ops,
-    min: parseInt(minInput.value, 10),
-    max: parseInt(maxInput.value, 10),
-    aantal: parseInt(aantalInput.value, 10),
-  };
+  const aantal = parseInt(aantalInput.value, 10);
+  if (mode === 'random') {
+    const ops = [...opCheckboxes].filter(c => c.checked).map(c => c.value);
+    settings = {
+      ops,
+      min: parseInt(minInput.value, 10),
+      max: parseInt(maxInput.value, 10),
+      aantal,
+    };
+  } else {
+    settings = { patterns: getValidPatterns(), aantal };
+  }
   session = generateSession(settings);
   sessionIndex = 0;
   results = [];
@@ -66,6 +91,72 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+
+// --- Mode toggle ---
+btnModeRandom.addEventListener('click', () => {
+  mode = 'random';
+  btnModeRandom.classList.add('active');
+  btnModeEigen.classList.remove('active');
+  randomSection.style.display = '';
+  eigenSection.style.display = 'none';
+  validate();
+});
+
+btnModeEigen.addEventListener('click', () => {
+  mode = 'eigen';
+  btnModeEigen.classList.add('active');
+  btnModeRandom.classList.remove('active');
+  randomSection.style.display = 'none';
+  eigenSection.style.display = '';
+  validate();
+});
+
+// --- Pattern management ---
+let patternIdCounter = 0;
+
+function getValidPatterns() {
+  return [...patternList.querySelectorAll('.pattern-row')].map(row => {
+    const fixed = parseInt(row.querySelector('.pat-fixed').value, 10);
+    const op = row.querySelector('.pat-op').value;
+    const min = parseInt(row.querySelector('.pat-min').value, 10);
+    const max = parseInt(row.querySelector('.pat-max').value, 10);
+    if (isNaN(fixed) || fixed < 1) return null;
+    if (isNaN(min) || min < 1) return null;
+    if (isNaN(max) || max <= min) return null;
+    if (op === '-' && max >= fixed) return null;
+    return { fixed, op, min, max };
+  }).filter(Boolean);
+}
+
+function addPatternRow() {
+  const id = ++patternIdCounter;
+  const row = document.createElement('div');
+  row.className = 'pattern-row';
+  row.dataset.id = id;
+  row.innerHTML = `
+    <input type="number" class="pat-fixed" placeholder="Getal" min="1">
+    <select class="pat-op">
+      <option value="+">+</option>
+      <option value="-">−</option>
+      <option value="×">×</option>
+      <option value="÷">÷</option>
+    </select>
+    <span class="pat-label">van</span>
+    <input type="number" class="pat-min" placeholder="1" min="1">
+    <span class="pat-label">tot</span>
+    <input type="number" class="pat-max" placeholder="9" min="1">
+    <button class="btn-delete-pattern" type="button">✕</button>
+  `;
+  row.querySelector('.btn-delete-pattern').addEventListener('click', () => {
+    row.remove();
+    validate();
+  });
+  row.querySelectorAll('input, select').forEach(el => el.addEventListener('input', validate));
+  patternList.appendChild(row);
+  validate();
+}
+
+btnAddPattern.addEventListener('click', addPatternRow);
 
 // --- Exercise screen elements ---
 const problemDisplay = document.getElementById('problem-display');
