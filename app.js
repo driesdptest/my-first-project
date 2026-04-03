@@ -161,7 +161,11 @@ const answerInput = document.getElementById('answer-input');
 const feedbackMsg = document.getElementById('feedback-msg');
 const progressLabel = document.getElementById('progress-label');
 const progressFill = document.getElementById('progress-fill');
-const btnControleren = document.getElementById('btn-controleren');
+const numpadBtns = document.querySelectorAll('.numpad-btn');
+
+function setNumpadEnabled(enabled) {
+  numpadBtns.forEach(btn => { btn.disabled = !enabled; });
+}
 
 const CELEBRATION_MSGS = [
   'Goed zo! 🎉', 'Super! ⭐', 'Wauw, geweldig! 🌟',
@@ -178,7 +182,6 @@ function showExercise() {
   feedbackMsg.className = 'feedback';
   attempts = 0;
   updateProgress();
-  setTimeout(() => answerInput.focus(), 100);
 }
 
 function updateProgress() {
@@ -197,12 +200,24 @@ function nextExercise() {
   }
 }
 
-btnControleren.addEventListener('click', checkAnswer);
-answerInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+document.querySelector('.numpad').addEventListener('click', e => {
+  const btn = e.target.closest('.numpad-btn');
+  if (!btn || btn.disabled) return;
+  const val = btn.dataset.val;
+  if (val === 'wis') {
+    answerInput.value = '';
+  } else if (btn.classList.contains('numpad-ok')) {
+    checkAnswer();
+  } else {
+    if (answerInput.value.length < 4) {
+      answerInput.value += val;
+    }
+  }
+});
 
 function checkAnswer() {
   const userAnswer = parseInt(answerInput.value, 10);
-  if (isNaN(userAnswer)) { answerInput.focus(); return; }
+  if (isNaN(userAnswer)) return;
 
   const correct = session[sessionIndex].answer;
 
@@ -211,10 +226,10 @@ function checkAnswer() {
     feedbackMsg.textContent = CELEBRATION_MSGS[Math.floor(Math.random() * CELEBRATION_MSGS.length)];
     feedbackMsg.className = 'feedback correct';
     launchConfetti();
-    btnControleren.disabled = true;
+    setNumpadEnabled(false);
     answerInput.disabled = true;
     setTimeout(() => {
-      btnControleren.disabled = false;
+      setNumpadEnabled(true);
       answerInput.disabled = false;
       nextExercise();
     }, 1500);
@@ -226,15 +241,14 @@ function checkAnswer() {
       feedbackMsg.className = 'feedback wrong';
       triggerShake(answerInput);
       answerInput.value = '';
-      answerInput.focus();
     } else {
       results.push(false);
       feedbackMsg.textContent = `Het antwoord is ${correct}`;
       feedbackMsg.className = 'feedback reveal';
-      btnControleren.disabled = true;
+      setNumpadEnabled(false);
       answerInput.disabled = true;
       setTimeout(() => {
-        btnControleren.disabled = false;
+        setNumpadEnabled(true);
         answerInput.disabled = false;
         nextExercise();
       }, 2000);
